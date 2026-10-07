@@ -87,6 +87,29 @@ Para correrlo hay que realizar los siguientes pasos:
    
 4. Abrir localhost:3000 y pulsa Analizar 10 conversaciones.
 
+#### Como probar el deploy
+
+La app tambien esta disponible en [LidzTest](https://lidz-test-dletelier.vercel.app/), donde para probarla hay que abrir la URL y pulsar Analizar 10 conversaciones. Si no, de igual manera lo puedes probar via curl con:
+
+curl -i https://lidz-test-dletelier.vercel.app/api/analyze \
+  -H "Content-Type: application/json" \
+  -d '{
+    "id": "prueba-001",
+    "messages": [
+      {
+        "speaker": "lead",
+        "text": "Quiero comprar un departamento para vivir. Mi presupuesto máximo es 4.500 UF y tengo crédito preaprobado."
+      }
+    ]
+  }'
+
+Si solo quieres comprobar que el deploy existe y responde se puede usar: 
+
+curl -i https://lidz-test-dletelier.vercel.app/api/health
+
+
+Este endpoint comprueba que el servidor responde, pero no hace una llamada a Gemini. La API Key queda en las variables de entorno del servidor y no se envia al navegador ni aparece en esta respuesta. El analisis de las conversaciones se prueba desde el boton de la app.
+
 
 ### Como se testeo y cuanto costo
 
