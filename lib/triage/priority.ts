@@ -1,19 +1,10 @@
 import type { EscalationReason, Fact, TriageResult } from "./schema";
+import { priorityWeights } from "./priority.constants";
 
-export const priorityWeights = {
-  version: "provisional-v1",
-  urgency: { no_urgency: 1, soon: 1.1, dated: 1.2, this_week: 1.3, immediate: 1.5 },
-  intent: { low: 0.7, medium: 1, high: 1.3 },
-  fit: { low: 0.7, medium: 1, high: 1.2 },
-  category: { owner_occupier_purchase: 1.3, investment_purchase: 1.35, commercial_purchase: 1, complaint: 1.3, inquiry: 1 },
-} as const;
+export { priorityWeights } from "./priority.constants";
 
 function known<T>(fact: Fact<T>): T | null {
   return fact.state === "known" ? fact.value : null;
-}
-
-function clamp(value: number, min: number, max: number): number {
-  return Math.min(max, Math.max(min, value));
 }
 
 export function priorityFromScore(score: number): "high" | "medium" | "low" {
@@ -86,28 +77,27 @@ function hasMissedVisitAndDelay(result: TriageResult): boolean {
 
 function financialFactor(result: TriageResult): number {
   const budget = known(result.purchase_budget);
-  let amountFactor = 1;
+  const weights = result.category === "commercial_purchase" ? priorityWeights.budget.commercial : priorityWeights.budget.residential;
+  let amountFactor: number = weights.unknown;
   if (budget?.currency === "UF") {
     if (result.category === "commercial_purchase") {
-      amountFactor = budget.amount <= 5_000 ? 0.6 : budget.amount <= 12_000 ? 0.85 : budget.amount <= 25_000 ? 1.15 : 1.45;
+      amountFactor = budget.amount <= 5_000 ? weights.small : budget.amount <= 12_000 ? weights.medium : budget.amount <= 25_000 ? weights.large : weights.largest;
     } else {
-      amountFactor = budget.amount <= 2_500 ? 0.55 : budget.amount <= 4_500 ? 0.8 : budget.amount <= 7_000 ? 1.05 : 1.3;
+      amountFactor = budget.amount <= 2_500 ? weights.small : budget.amount <= 4_500 ? weights.medium : budget.amount <= 7_000 ? weights.large : weights.largest;
     }
   }
   const profile = result.profile;
-  if (profile?.product === "residential") {
-    const hasIncome = profile.monthly_income.state === "known";
-    const hasPreapproval = known(profile.credit_preapproved);
-    const income = hasIncome ? hasPreapproval === true ? 1.25 : 1.1 : 1;
-    const downPayment = known(profile.down_payment);
-    return amountFactor * income * (downPayment && downPayment.amount > 0 ? 1.15 : 1);
-  }
   if (profile?.product === "commercial") {
     const area = known(profile.floor_area_m2);
-    const areaFactor = area === null ? 1 : area <= 100 ? 1 : area <= 300 ? 1.1 : area <= 1_000 ? 1.25 : 1.4;
+    const areaFactor = area === null || area <= 100 ? priorityWeights.area.small : area <= 300 ? priorityWeights.area.medium : area <= 1_000 ? priorityWeights.area.large : priorityWeights.area.largest;
     return amountFactor * areaFactor;
   }
-  return amountFactor;
+  if (profile === null && result.category === "commercial_purchase") return amountFactor * priorityWeights.area.small;
+  const hasIncome = profile?.product === "residential" && profile.monthly_income.state === "known";
+  const hasPreapproval = profile?.product === "residential" && known(profile.credit_preapproved) === true;
+  const income = hasIncome ? hasPreapproval ? priorityWeights.income.preapproved : priorityWeights.income.declared : priorityWeights.income.unknown;
+  const downPayment = profile?.product === "residential" ? known(profile.down_payment) : null;
+  return amountFactor * income * (downPayment && downPayment.amount > 0 ? priorityWeights.downPayment.positive : priorityWeights.downPayment.unknown);
 }
 
 export function applyPriorityPolicy(result: TriageResult): TriageResult {
@@ -131,15 +121,11 @@ export function applyPriorityPolicy(result: TriageResult): TriageResult {
   const urgency = known(result.urgency);
   const intent = known(result.intent);
   const fit = known(result.inventory_fit);
-  const interestFactor = clamp(
-    (urgency ? priorityWeights.urgency[urgency] : 1)
-      * (intent ? priorityWeights.intent[intent] : 1)
-      * (fit ? priorityWeights.fit[fit] : 1),
-    0.3,
-    1.5,
-  );
-  const weightedScore = 100 * clamp(financialFactor(result), 0.3, 1.5) * interestFactor * priorityWeights.category[result.category] * (known(result.purchase_budget) ? 1 : 0.85);
-  const score = Math.round(clamp(weightedScore / 2, 0, 100));
+  const interestFactor = (urgency ? priorityWeights.urgency[urgency] : priorityWeights.urgency.no_urgency)
+    * (intent ? priorityWeights.intent[intent] : priorityWeights.intent.medium)
+    * (fit ? priorityWeights.fit[fit] : priorityWeights.fit.medium);
+  const budgetPresence = known(result.purchase_budget) ? priorityWeights.budgetPresence.known : priorityWeights.budgetPresence.unknown;
+  const score = Math.round(100 * financialFactor(result) * interestFactor * priorityWeights.category[result.category] * budgetPresence);
   const priority = priorityFromScore(score);
   const escalation = known(result.human_escalation);
   const handling = result.category === "complaint"

@@ -239,8 +239,8 @@
             }
           ]
         },
-        "priority": "high",
-        "score": 91,
+        "priority": "low",
+        "score": 31,
         "should_call": true,
         "summary": "Busca comprar para vivir.",
         "invalidated_fields": [],
@@ -495,8 +495,8 @@
           "value": null,
           "evidence": []
         },
-        "priority": "high",
-        "score": 88,
+        "priority": "low",
+        "score": 30,
         "should_call": true,
         "summary": "Busca comprar como inversión; presupuesto declarado UF 9.000.",
         "invalidated_fields": [],
@@ -776,8 +776,8 @@
             }
           ]
         },
-        "priority": "medium",
-        "score": 78,
+        "priority": "low",
+        "score": 34,
         "should_call": true,
         "summary": "Busca comprar para vivir; presupuesto declarado UF 3.500, urgencia declarada.",
         "invalidated_fields": [],
@@ -913,7 +913,7 @@
           "evidence": []
         },
         "priority": "low",
-        "score": 30,
+        "score": 10,
         "should_call": true,
         "summary": "Consulta por un proyecto.",
         "invalidated_fields": [],
@@ -1112,8 +1112,8 @@
           "value": null,
           "evidence": []
         },
-        "priority": "medium",
-        "score": 61,
+        "priority": "low",
+        "score": 21,
         "should_call": true,
         "summary": "Consulta sobre subsidio; requiere confirmación humana.",
         "invalidated_fields": [],
@@ -1422,8 +1422,8 @@
           "value": null,
           "evidence": []
         },
-        "priority": "medium",
-        "score": 43,
+        "priority": "low",
+        "score": 13,
         "should_call": true,
         "summary": "Consulta por una compra comercial.",
         "invalidated_fields": [],
@@ -1436,5 +1436,6 @@
         "total_tokens": 15825
       }
     }
-  ]
+  ],
+  "priority_policy_version": "normalized-v2"
 }

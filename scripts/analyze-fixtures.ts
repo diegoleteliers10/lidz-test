@@ -2,6 +2,7 @@ import { writeFile } from "node:fs/promises";
 import { Result } from "better-result";
 import conversations from "@/lib/data/conversations.json";
 import { analyzeConversation, configuredModel } from "@/lib/triage/gemini";
+import { priorityWeights } from "@/lib/triage/priority.constants";
 import { adaptFixtureConversation, type TriageResult } from "@/lib/triage/schema";
 
 type OutputItem =
@@ -42,6 +43,7 @@ async function analyzeFixtures(): Promise<void> {
     ? (usage.input_tokens * 0.25 + usage.output_tokens * 1.5) / 1_000_000
     : null;
   const output = {
+    priority_policy_version: priorityWeights.version,
     model: configuredModel,
     generated_at: new Date().toISOString(),
     source: "lib/data/conversations.json",
