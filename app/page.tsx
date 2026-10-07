@@ -256,7 +256,6 @@ export default function Home() {
       <header className="topbar">
         <a className="wordmark" href="#main" aria-label="Inicio de Lidz">LIDZ<span>.ai</span></a>
         <span className="topbar-divider" aria-hidden="true" />
-        <div className="topbar-status"><span className="status-dot" />Datos de prueba · análisis manual</div>
         <label className="global-search">
           <Search size={17} aria-hidden="true" />
           <span className="sr-only">Buscar conversaciones</span>
@@ -271,7 +270,7 @@ export default function Home() {
         </button>
       </header>
 
-      <div className="mobile-brand"><span className="wordmark">LIDZ<span>.ai</span></span><span className="topbar-status"><span className="status-dot" />Análisis manual</span></div>
+      <div className="mobile-brand"><span className="wordmark">LIDZ<span>.ai</span></span></div>
 
       <div className="dashboard" id="main">
         <section className="welcome-row" aria-labelledby="welcome-title">

@@ -49,11 +49,10 @@ a { color: inherit; text-decoration: none; }
 .topbar-divider { width: 1px; height: 29px; background: var(--border); margin-left: -5px; }
 .user-menu, .icon-button { display: inline-flex; align-items: center; background: transparent; border: 0; cursor: pointer; }
 .user-menu > svg { color: var(--muted); }
-.topbar-status { display: flex; align-items: center; gap: 8px; border-radius: 99px; background: var(--secondary-soft); color: var(--secondary); padding: 9px 13px; font-size: 11px; font-weight: 750; white-space: nowrap; margin-left: auto; }
 .status-dot { width: 8px; height: 8px; display: inline-block; flex: 0 0 8px; border-radius: 50%; background: var(--warning); box-shadow: 0 0 0 4px rgba(188,123,28,.12); }
 .status-dot.success { background: var(--success); box-shadow: 0 0 0 4px rgba(29,140,114,.12); }
 .global-search, .queue-search { display: flex; align-items: center; gap: 10px; border: 1px solid var(--border); border-radius: 12px; background: #f7faff; color: var(--muted); }
-.global-search { width: clamp(180px, 18vw, 300px); padding: 0 12px; height: 40px; }
+.global-search { width: clamp(180px, 18vw, 300px); padding: 0 12px; height: 40px; margin-left: auto; }
 .global-search input, .queue-search input { width: 100%; min-width: 0; border: 0; outline: 0; background: transparent; color: var(--foreground); font-size: 12px; }
 .global-search input::placeholder, .queue-search input::placeholder { color: #8796ad; }
 kbd { color: #71809a; border: 1px solid var(--border); border-radius: 5px; background: white; padding: 2px 5px; font-size: 10px; white-space: nowrap; }
@@ -214,7 +213,6 @@ h1 strong { font-weight: 780; }
 
 @media (max-width: 1180px) {
   .topbar { gap: 14px; padding: 0 22px; }
-  .topbar-status { display: none; }
   .content-grid { grid-template-columns: minmax(260px,.84fr) minmax(0,1.6fr); gap: 16px; }
 }
 @media (max-width: 900px) {
@@ -229,8 +227,7 @@ h1 strong { font-weight: 780; }
 }
 @media (max-width: 650px) {
   .topbar { display: none; }
-  .mobile-brand { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 13px 17px; background: white; border-bottom: 1px solid var(--border); }
-  .mobile-brand .topbar-status { display: inline-flex; margin: 0; padding: 7px 10px; font-size: 9px; }
+  .mobile-brand { display: flex; align-items: center; justify-content: flex-start; gap: 10px; padding: 13px 17px; background: white; border-bottom: 1px solid var(--border); }
   .dashboard { padding: 24px 15px 20px; }
   .welcome-row { align-items: start; flex-direction: column; gap: 18px; margin-bottom: 20px; }
   h1 { font-size: 34px; }
